@@ -2,7 +2,7 @@
 // Title       : package_settings (parameters)
 //-----------------------------------------------------------------------------
 // File        : package_settings.sv
-// Company     : INP SB RAS
+// Company     : My company
 // Created     : 11/03/2014
 // Created by  : Alina Ivanova
 //-----------------------------------------------------------------------------
@@ -10,10 +10,10 @@
 //-----------------------------------------------------------------------------
 // Revision    : 1.0_alpha
 //-----------------------------------------------------------------------------
-// Copyright (c) 2014 INP SB RAS
+// Copyright (c) 2014 My company
 // This work may not be copied, modified, re-published, uploaded, executed, or
 // distributed in any way, in any medium, whether in whole or in part, without
-// prior written permission from INP SB RAS.
+// prior written permission from My company.
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 package package_settings;
@@ -21,6 +21,10 @@ package package_settings;
 // Parameter Declaration(s)
 //-----------------------------------------------------------------------------
 	parameter CHANNEL_SIZE                                   = 2;
+//-----------------------------------------------------------------------------
+	parameter k                                              = 25;
+	parameter l                                              = 20;
+	parameter norm                                           = 10;
 //-----------------------------------------------------------------------------
 	parameter SIZE_ADC_SAMPLES                               = 7;
 	parameter SIZE_ADC_DATA                                  = 14;
