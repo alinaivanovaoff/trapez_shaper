@@ -2,7 +2,7 @@
 // Title       : shaper_trapezoidal
 //-----------------------------------------------------------------------------
 // File        : shaper_trapezoidal.sv
-// Company     : INP SB RAS
+// Company     : My company
 // Created     : 19/03/2014
 // Created by  : Alina Ivanova
 //-----------------------------------------------------------------------------
@@ -10,10 +10,10 @@
 //-----------------------------------------------------------------------------
 // Revision    : 1.1
 //-----------------------------------------------------------------------------
-// Copyright (c) 2014 INP SB RAS
+// Copyright (c) 2014 My company
 // This work may not be copied, modified, re-published, uploaded, executed, or
 // distributed in any way, in any medium, whether in whole or in part, without
-// prior written permission from INP SB RAS.
+// prior written permission from My company.
 //-----------------------------------------------------------------------------
 // dkl(n) = v(n)   - v(n-k) - v(n-l) + v(n-k-l)
 //   p(n) = p(n-1) + dkl(n), n<=0
