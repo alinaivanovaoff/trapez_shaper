@@ -24,6 +24,8 @@
 //-----------------------------------------------------------------------------
 `timescale 1ns/1ps
 //-----------------------------------------------------------------------------
+import package_settings::*;
+//-----------------------------------------------------------------------------
 module trapez_shaper (
 //-----------------------------------------------------------------------------
 // Input Ports
@@ -195,7 +197,7 @@ module trapez_shaper (
 		if (!reset) begin
 			reset_mult                                        <= '0;
 		end else begin
-			if (trapezoidal_ena && enable && pulse_time)
+			if (trapez_ena && enable && pulse_time)
 				reset_mult                                <= 1'b1;
 			else
 				reset_mult                                <= '0;
