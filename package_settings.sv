@@ -24,7 +24,6 @@ package package_settings;
 //-----------------------------------------------------------------------------
 	parameter k                                              = 25;
 	parameter l                                              = 20;
-	parameter M                                              = 
 	parameter norm                                           = 10;
 //-----------------------------------------------------------------------------
 	parameter SIZE_ADC_SAMPLES                               = 7;
