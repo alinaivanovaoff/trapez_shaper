@@ -42,7 +42,7 @@ module trapez_shaper (
 	input  wire [SIZE_SHAPER_CONSTANT-1:0]                            M1_trapez,
 	input  wire [SIZE_SHAPER_CONSTANT-1:0]                            M2_trapez,
 //-----------------------------------------------------------------------------
-	input  wire [SIZE_SHAPER_DATA + SIZE_SHAPER_ADD_CAPACITY:0]       shift_reg_input_sig                [SIZE_SHAPER_SHIFT_REG-1:0], //60
+	input  wire [SIZE_SHAPER_DATA_ADD_CAPACITY:0]                     shift_reg_input_sig     [SIZE_SHAPER_SHIFT_REG],
 	input  wire                                                       pulse_time,
 //-----------------------------------------------------------------------------
 // Output Ports
@@ -51,33 +51,33 @@ module trapez_shaper (
 //-----------------------------------------------------------------------------
 // Signal declarations
 //-----------------------------------------------------------------------------
-	reg  signed [SIZE_SHAPER_DATA + SIZE_SHAPER_ADD_CAPACITY:0]       dk_trapez_a;
-	reg  signed [SIZE_SHAPER_DATA + SIZE_SHAPER_ADD_CAPACITY:0]       dk_trapez_b;
-	wire signed [SIZE_SHAPER_DATA + SIZE_SHAPER_ADD_CAPACITY:0]       dk_trapez;
+	reg  signed [SIZE_SHAPER_DATA_ADD_CAPACITY:0]                     dk_trapez_a;
+	reg  signed [SIZE_SHAPER_DATA_ADD_CAPACITY:0]                     dk_trapez_b;
+	wire signed [SIZE_SHAPER_DATA_ADD_CAPACITY:0]                     dk_trapez;
 //-----------------------------------------------------------------------------
-	reg  signed [SIZE_SHAPER_DATA + SIZE_SHAPER_ADD_CAPACITY:0]       dl_trapez_a;
-	reg  signed [SIZE_SHAPER_DATA + SIZE_SHAPER_ADD_CAPACITY:0]       dl_trapez_b;
-	wire signed [SIZE_SHAPER_DATA + SIZE_SHAPER_ADD_CAPACITY:0]       dl_trapez;
+	reg  signed [SIZE_SHAPER_DATA_ADD_CAPACITY:0]                     dl_trapez_a;
+	reg  signed [SIZE_SHAPER_DATA_ADD_CAPACITY:0]                     dl_trapez_b;
+	wire signed [SIZE_SHAPER_DATA_ADD_CAPACITY:0]                     dl_trapez;
 //-----------------------------------------------------------------------------
-	wire signed [SIZE_SHAPER_DATA + SIZE_SHAPER_ADD_CAPACITY:0]       dkl_trapez;
-	wire signed [SIZE_SHAPER_DATA + SIZE_SHAPER_ADD_CAPACITY:0]       dkl_M1_trapez_rate;
-	reg  signed [SIZE_SHAPER_DATA + SIZE_SHAPER_ADD_CAPACITY:0]       dkl_M1_trapez_rate_late;
-	wire signed [SIZE_SHAPER_DATA + SIZE_SHAPER_ADD_CAPACITY:0]       dkl_M2_trapez_rate;
-	reg  signed [SIZE_SHAPER_DATA + SIZE_SHAPER_ADD_CAPACITY:0]       dkl_M2_trapez_rate_late [2:0];
+	wire signed [SIZE_SHAPER_DATA_ADD_CAPACITY:0]                     dkl_trapez;
+	wire signed [SIZE_SHAPER_DATA_ADD_CAPACITY:0]                     dkl_M1_trapez_rate;
+	reg  signed [SIZE_SHAPER_DATA_ADD_CAPACITY:0]                     dkl_M1_trapez_rate_late;
+	wire signed [SIZE_SHAPER_DATA_ADD_CAPACITY:0]                     dkl_M2_trapez_rate;
+	reg  signed [SIZE_SHAPER_DATA_ADD_CAPACITY:0]                     dkl_M2_trapez_rate_late [3];
 //-----------------------------------------------------------------------------
-	wire signed [SIZE_SHAPER_DATA + SIZE_SHAPER_ADD_CAPACITY:0]       p_trapez;
-	reg  signed [SIZE_SHAPER_DATA + SIZE_SHAPER_ADD_CAPACITY:0]       p_trapez_late;
+	wire signed [SIZE_SHAPER_DATA_ADD_CAPACITY:0]                     p_trapez;
+	reg  signed [SIZE_SHAPER_DATA_ADD_CAPACITY:0]                     p_trapez_late;
 //-----------------------------------------------------------------------------
-	reg  signed [SIZE_SHAPER_DATA + SIZE_SHAPER_ADD_CAPACITY:0]       r_trapez;
-	reg         [SIZE_SHAPER_DATA + SIZE_SHAPER_ADD_CAPACITY:0]       r_trapez_late;
+	reg  signed [SIZE_SHAPER_DATA_ADD_CAPACITY:0]                     r_trapez;
+	reg         [SIZE_SHAPER_DATA_ADD_CAPACITY:0]                     r_trapez_late;
 //-----------------------------------------------------------------------------
-	reg  signed [SIZE_SHAPER_DATA + SIZE_SHAPER_ADD_CAPACITY:0]       q_trapez;
-	reg         [SIZE_SHAPER_DATA + SIZE_SHAPER_ADD_CAPACITY:0]       q_trapez_late;
+	reg  signed [SIZE_SHAPER_DATA_ADD_CAPACITY:0]                     q_trapez;
+	reg         [SIZE_SHAPER_DATA_ADD_CAPACITY:0]                     q_trapez_late;
 //-----------------------------------------------------------------------------
-	reg  signed [SIZE_SHAPER_DATA + SIZE_SHAPER_ADD_CAPACITY:0]       s_trapez;
+	reg  signed [SIZE_SHAPER_DATA_ADD_CAPACITY:0]                     s_trapez;
 //-----------------------------------------------------------------------------
-	reg         [SIZE_SHAPER_DATA + SIZE_SHAPER_ADD_CAPACITY:0]       input_data_late                    [1:0];
-	reg         [SIZE_SHAPER_DATA + SIZE_SHAPER_ADD_CAPACITY:0]       input_data_difference;
+	reg         [SIZE_SHAPER_DATA_ADD_CAPACITY:0]                     input_data_late         [2];
+	reg         [SIZE_SHAPER_DATA_ADD_CAPACITY:0]                     input_data_difference;
 //-----------------------------------------------------------------------------
 	reg                                                               reset_mult;
 //-----------------------------------------------------------------------------
@@ -89,13 +89,13 @@ module trapez_shaper (
 //-----------------------------------------------------------------------------
 // Process Section
 //-----------------------------------------------------------------------------
-	always_ff @ (negedge reset_mult or posedge clk) begin: SHAPER_TRAPEZ_CALCULATE
+	always_ff @(negedge reset_mult or posedge clk) begin: SHAPER_TRAPEZ_CALCULATE
 		if (!reset_mult) begin
 			{dk_trapez_a, dk_trapez_b}                    <= '0;
 //-----------------------------------------------------------------------------
 			{dl_trapez_a, dl_trapez_b}                    <= '0;
 //-----------------------------------------------------------------------------
-			{dkl_M1_trapez_rate_late, dkl_M2_trapez_rate_late_0, dkl_M2_trapez_rate_late_1, dkl_M2_trapez_rate_late_2} <= '0;
+			{dkl_M1_trapez_rate_late, dkl_M2_trapez_rate_late[0], dkl_M2_trapez_rate_late[1], dkl_M2_trapez_rate_late[2]} <= '0;
 //-----------------------------------------------------------------------------
 			{p_trapez_late, r_trapez_late, q_trapez_late} <= '0;
 		end else begin
@@ -131,7 +131,7 @@ module trapez_shaper (
 		end
 	end: SHAPER_TRAPEZ_CALCULATE
 //-----------------------------------------------------------------------------
-	always_ff @ (negedge reset or posedge clk) begin: SHAPER_TRAPEZ_RESET_MULT
+	always_ff @(negedge reset or posedge clk) begin: SHAPER_TRAPEZ_RESET_MULT
 		if (!reset) begin
 			reset_mult                                   <= '0;
 		end else begin
@@ -142,7 +142,7 @@ module trapez_shaper (
 		end
 	end: SHAPER_TRAPEZ_RESET_MULT
 //-----------------------------------------------------------------------------
-	always_ff @ (negedge reset_mult or posedge clk) begin: SHAPER_TRAPEZ_OUTPUT_DATA
+	always_ff @(negedge reset_mult or posedge clk) begin: SHAPER_TRAPEZ_OUTPUT_DATA
 		if (!reset_mult) begin
 			output_data                                  <= '0;
 		end else begin
