@@ -109,8 +109,8 @@ module trapez_shaper (
 //-----------------------------------------------------------------------------
 			dkl_trapez                                   <= dk_trapez - dl_trapez;
 //-----------------------------------------------------------------------------
-			dkl_M1_trapez_rate                           <= dkl_trapez * M1;
-			dkl_M2_trapez_rate                           <= dkl_trapez * M2;
+			dkl_M1_trapez_rate                           <= dkl_trapez * M1_trapez;
+			dkl_M2_trapez_rate                           <= dkl_trapez * M2_trapez;
 //-----------------------------------------------------------------------------
 			dkl_M1_trapez_rate_late                      <= dkl_M1_trapez_rate;
 			dkl_M2_trapez_rate_late[0]                   <= dkl_M2_trapez_rate;
