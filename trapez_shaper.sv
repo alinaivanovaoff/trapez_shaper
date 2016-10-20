@@ -33,8 +33,6 @@ module trapez_shaper (
 	input  wire                                                       clk,
 	input  wire                                                       reset,
 //-----------------------------------------------------------------------------
-	input  wire                                                       end_impuls,
-//-----------------------------------------------------------------------------
 	input  wire                                                       trapez_ena,
 	input  wire                                                       enable,
 	input  wire                                                       overflow_ena,
@@ -65,9 +63,7 @@ module trapez_shaper (
 	wire signed [SIZE_SHAPER_DATA + SIZE_SHAPER_ADD_CAPACITY:0]       dkl_M1_trapez_rate;
 	reg  signed [SIZE_SHAPER_DATA + SIZE_SHAPER_ADD_CAPACITY:0]       dkl_M1_trapez_rate_late;
 	wire signed [SIZE_SHAPER_DATA + SIZE_SHAPER_ADD_CAPACITY:0]       dkl_M2_trapez_rate;
-	reg  signed [SIZE_SHAPER_DATA + SIZE_SHAPER_ADD_CAPACITY:0]       dkl_M2_trapez_rate_late_0;
-	reg  signed [SIZE_SHAPER_DATA + SIZE_SHAPER_ADD_CAPACITY:0]       dkl_M2_trapez_rate_late_1;
-	reg  signed [SIZE_SHAPER_DATA + SIZE_SHAPER_ADD_CAPACITY:0]       dkl_M2_trapez_rate_late_2;
+	reg  signed [SIZE_SHAPER_DATA + SIZE_SHAPER_ADD_CAPACITY:0]       dkl_M2_trapez_rate_late [2:0];
 //-----------------------------------------------------------------------------
 	wire signed [SIZE_SHAPER_DATA + SIZE_SHAPER_ADD_CAPACITY:0]       p_trapez;
 	reg  signed [SIZE_SHAPER_DATA + SIZE_SHAPER_ADD_CAPACITY:0]       p_trapez_late;
@@ -79,87 +75,14 @@ module trapez_shaper (
 	reg         [SIZE_SHAPER_DATA + SIZE_SHAPER_ADD_CAPACITY:0]       q_trapez_late;
 //-----------------------------------------------------------------------------
 	reg  signed [SIZE_SHAPER_DATA + SIZE_SHAPER_ADD_CAPACITY:0]       s_trapez;
-	reg         [SIZE_SHAPER_DATA + SIZE_SHAPER_ADD_CAPACITY:0]       s_trapez_late;
-	reg         [SIZE_SHAPER_DATA + SIZE_SHAPER_ADD_CAPACITY:0]       s_trapez_norm;
-	reg  signed [SIZE_SHAPER_DATA + SIZE_SHAPER_ADD_CAPACITY:0]       s_trapez_norm_late;
 //-----------------------------------------------------------------------------
 	reg         [SIZE_SHAPER_DATA + SIZE_SHAPER_ADD_CAPACITY:0]       input_data_late                    [1:0];
 	reg         [SIZE_SHAPER_DATA + SIZE_SHAPER_ADD_CAPACITY:0]       input_data_difference;
 //-----------------------------------------------------------------------------
 	reg                                                               reset_mult;
-	reg                                                               ena_plus_one;
 //-----------------------------------------------------------------------------
 // Sub Module Section
 //-----------------------------------------------------------------------------
-	shaper_add_sub ShaperAddSubDk (
-		.aclr                                                     (~reset_mult),
-		.add_sub                                                  (0),
-		.clock                                                    (clk),
-		.dataa                                                    (dk_trapez_a),
-		.datab                                                    (dk_trapez_b),
-		.result                                                   (dk_trapez));
-
-	shaper_add_sub ShaperAddSubDl (
-		.aclr                                                     (~reset_mult),
-		.add_sub                                                  (0),
-		.clock                                                    (clk),
-		.dataa                                                    (dl_trapez_a),
-		.datab                                                    (dl_trapez_b),
-		.result                                                   (dl_trapez));
-
-	shaper_add_sub ShaperAddSubDkl (
-		.aclr                                                     (~reset_mult),
-		.add_sub                                                  (0),
-		.clock                                                    (clk),
-		.dataa                                                    (dk_trapez),
-		.datab                                                    (dl_trapez),
-		.result                                                   (dkl_trapez));
-
-	shaper_mult ShaperMultM1 (
-		.aclr                                                     (~reset_mult),
-		.clock                                                    (clk),
-		.dataa                                                    (dkl_trapez),
-		.datab                                                    (M1_trapez),
-		.result                                                   (dkl_M1_trapez_rate));
-
-	shaper_mult ShaperMultM2 (
-		.aclr                                                     (~reset_mult),
-		.clock                                                    (clk),
-		.dataa                                                    (dkl_trapez),
-		.datab                                                    (M2_trapez),
-		.result                                                   (dkl_M2_trapez_rate));
-
-	shaper_add_sub ShaperAddSubP (
-		.aclr                                                     (~reset_mult),
-		.add_sub                                                  (1),
-		.clock                                                    (clk),
-		.dataa                                                    (p_trapez),
-		.datab                                                    (dkl_trapez),
-		.result                                                   (p_trapez));
-
-	shaper_add_sub ShaperAddSubR (
-		.aclr                                                     (~reset_mult),
-		.add_sub                                                  (1),
-		.clock                                                    (clk),
-		.dataa                                                    (p_trapez_late),
-		.datab                                                    (dkl_M1_trapez_rate_late),
-		.result                                                   (r_trapez));
-
-	shaper_add_sub ShaperAddSubQ (
-		.aclr                                                     (~reset_mult),
-		.add_sub                                                  (1),
-		.clock                                                    (clk),
-		.dataa                                                    (r_trapez_late),
-		.datab                                                    (dkl_M2_trapez_rate_late_2),
-		.result                                                   (q_trapez));
-
-	shaper_add_sub ShaperAddSubS (
-		.aclr                                                      (~reset_mult),
-		.add_sub                                                   (1),
-		.clock                                                     (clk),
-		.dataa                                                     (r_trapez),
-		.datab                                                     (s_trapez),
-		.result                                                    (s_trapez));
 //-----------------------------------------------------------------------------
 // Signal Section
 //-----------------------------------------------------------------------------
@@ -168,9 +91,9 @@ module trapez_shaper (
 //-----------------------------------------------------------------------------
 	always_ff @ (negedge reset_mult or posedge clk) begin: SHAPER_TRAPEZ_CALCULATE
 		if (!reset_mult) begin
-			{dk_trapez_a, dk_trapez_b}              <= '0;
+			{dk_trapez_a, dk_trapez_b}                    <= '0;
 //-----------------------------------------------------------------------------
-			{dl_trapez_a, dl_trapez_b}              <= '0;
+			{dl_trapez_a, dl_trapez_b}                    <= '0;
 //-----------------------------------------------------------------------------
 			{dkl_M1_trapez_rate_late, dkl_M2_trapez_rate_late_0, dkl_M2_trapez_rate_late_1, dkl_M2_trapez_rate_late_2} <= '0;
 //-----------------------------------------------------------------------------
@@ -178,37 +101,52 @@ module trapez_shaper (
 		end else begin
 			dk_trapez_a                                  <= shift_reg_input_sig[0];
 			dk_trapez_b                                  <= shift_reg_input_sig[k];
+			dk_trapez                                    <= dk_trapez_a - dk_trapez_b;
 //-----------------------------------------------------------------------------
 			dl_trapez_a                                  <= shift_reg_input_sig[l];
 			dl_trapez_b                                  <= shift_reg_input_sig[k+l];
+			dl_trapez                                    <= dl_trapez_a - dl_trapez_b;
+//-----------------------------------------------------------------------------
+			dkl_trapez                                   <= dk_trapez - dl_trapez;
+//-----------------------------------------------------------------------------
+			dkl_M1_trapez_rate                           <= dkl_trapez * M1;
+			dkl_M2_trapez_rate                           <= dkl_trapez * M2;
 //-----------------------------------------------------------------------------
 			dkl_M1_trapez_rate_late                      <= dkl_M1_trapez_rate;
-			dkl_M2_trapez_rate_late_0                    <= dkl_M2_trapez_rate;
-			dkl_M2_trapez_rate_late_1                    <= dkl_M2_trapez_rate_late_0;
-			dkl_M2_trapez_rate_late_2                    <= dkl_M2_trapez_rate_late_1;
+			dkl_M2_trapez_rate_late[0]                   <= dkl_M2_trapez_rate;
+			dkl_M2_trapez_rate_late[1]                   <= dkl_M2_trapez_rate_late[0];
+			dkl_M2_trapez_rate_late[2]                   <= dkl_M2_trapez_rate_late[1];
 //-----------------------------------------------------------------------------
+			p_trapez                                     <= p_trapez + dkl_trapez;
 			p_trapez_late                                <= p_trapez;
+//-----------------------------------------------------------------------------
 			r_trapez_late                                <= r_trapez;
+		        r_trapez                                     <= p_trapez_late + dkl_M1_trapez_rate_late;
+//-----------------------------------------------------------------------------
 			q_trapez_late                                <= q_trapez;
+			q_trapez                                     <= r_trapez_late + dkl_M2_trapez_rate_late[2];
+//-----------------------------------------------------------------------------
+			s_trapez                                     <= r_trapez + s_trapez;			
+//-----------------------------------------------------------------------------
 		end
 	end: SHAPER_TRAPEZ_CALCULATE
 //-----------------------------------------------------------------------------
 	always_ff @ (negedge reset or posedge clk) begin: SHAPER_TRAPEZ_RESET_MULT
 		if (!reset) begin
-			reset_mult                                        <= '0;
+			reset_mult                                   <= '0;
 		end else begin
 			if (trapez_ena && enable && pulse_time)
-				reset_mult                                <= 1'b1;
+				reset_mult                           <= 1'b1;
 			else
-				reset_mult                                <= '0;
+				reset_mult                           <= '0;
 		end
 	end: SHAPER_TRAPEZ_RESET_MULT
 //-----------------------------------------------------------------------------
 	always_ff @ (negedge reset_mult or posedge clk) begin: SHAPER_TRAPEZ_OUTPUT_DATA
 		if (!reset_mult) begin
-			output_data                                      <= '0;
+			output_data                                  <= '0;
 		end else begin
-			output_data                                      <= s_trapez >>> norm;
+			output_data                                  <= s_trapez >>> norm;
 		end
 	end: SHAPER_TRAPEZ_OUTPUT_DATA
 //-----------------------------------------------------------------------------
