@@ -85,7 +85,7 @@ module trapez_shaper (
         if (!reset) begin
             reset_mult                                    <= '0;
         end else begin
-            reset_mult                                    <= (trapez_ena && enable && pulse_time) ? 1'b1 : '0;
+            reset_mult                                    <= (trapez_ena & enable & pulse_time) ? '1 : '0;
         end
     end: SHAPER_TRAPEZ_RESET_MULT
 //-----------------------------------------------------------------------------
