@@ -28,16 +28,15 @@ package settings_pkg;
 //-----------------------------------------------------------------------------
     parameter CHANNEL_SIZE                                   = 2;
 //-----------------------------------------------------------------------------
-    parameter K                                              = 25;
-    parameter L                                              = 20;
-    parameter NORM                                           = 10;
-    parameter M_1                                            = 3;
-    parameter M_2                                            = 17;
+    parameter K                                              = 1;//25;
+    parameter L                                              = 2;//20;
+    parameter M_1                                            = 2;//3
+    parameter M_2                                            = 4;//17
 //-----------------------------------------------------------------------------
     parameter DATA_SIZE                                      = 16;
     parameter SHIFT_REG_SIZE                                 = 300;
     parameter CONSTANT_SIZE                                  = 8;
-    parameter EXTRA_BITS                                     = 10; //for current constant K, L, M_1, M_2
+    parameter EXTRA_BITS                                     = 7 + 5; 
     parameter FULL_SIZE                                      = DATA_SIZE + EXTRA_BITS;
     parameter DKL_M_2_TRAPEZ_RATE_SIZE                       = 3;
     parameter PIPELINE_STAGES                                = 8;
