@@ -46,7 +46,7 @@ module trapez_shaper import settings_pkg::*; (
 //-----------------------------------------------------------------------------
 // Output Ports
 //-----------------------------------------------------------------------------
-    output reg         [DATA_SIZE-1:0]                    output_data,
+    output reg         [FULL_SIZE-1:0]                    output_data,
     output reg                                            output_data_valid);
 //-----------------------------------------------------------------------------
 // Signal declarations
@@ -113,16 +113,10 @@ module trapez_shaper import settings_pkg::*; (
             {dl_trapez_a, dl_trapez_b, dl_trapez}         <= '0;
             dkl_trapez                                    <= '0;
 //-----------------------------------------------------------------------------
-            {dkl_M_1_trapez_rate, dkl_M_1_trapez_rate_z}  <= '0;
+            dkl_M_1_trapez_rate                           <= '0;
             {dkl_M_2_trapez_rate, dkl_M_2_trapez_rate_z}  <= '0;
-            for (int i = 0; i < DKL_M_2_TRAPEZ_RATE_SIZE; i++) begin
-                dkl_M_2_trapez_rate_z[i]                  <= '0;
-            end
 //-----------------------------------------------------------------------------
-            {p_trapez, p_trapez_z}                        <= '0;
-            {r_trapez_z, r_trapez_z}                      <= '0;
-            {q_trapez_z, q_trapez_z}                      <= '0;
-            s_trapez                                      <= '0;
+            {p_trapez, r_trapez, q_trapez, s_trapez}      <= '0;
 //-----------------------------------------------------------------------------
             for (int i = 1; i < PIPELINE_STAGES; i++) begin
                 enable_z[i]                               <= '0;
@@ -165,7 +159,7 @@ module trapez_shaper import settings_pkg::*; (
             output_data                                   <= '0;
             output_data_valid                             <= '0;
         end else begin
-            output_data                                   <= s_trapez >>> NORM;
+            output_data                                   <= s_trapez;
             output_data_valid                             <= enable_z[7];
         end
     end: SHAPER_TRAPEZ_OUTPUT_DATA
