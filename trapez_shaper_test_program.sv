@@ -78,10 +78,10 @@ program trapez_shaper_test_program import settings_pkg::*; (
                             data_gm                     = data_gm_fifo.pop_front();
 //                          $display("Data in golden mode: %d", data_gm);
 //                          $stop;
-//                            if ((data_gm - ICKResult.output_data) != 0) begin
-//                                $display("Error! Expetcted DATA: %d != received DATA: %d", data_gm, ICKResult.output_data);
-//                            end
-//                            else
+                            if ((data_gm - ICKResult.output_data) != 0) begin
+                                $display("Error! Expetcted DATA: %d != received DATA: %d", data_gm, ICKResult.output_data);
+                            end
+                            else
                                 $display("Expetcted DATA = %d; received DATA = %d", data_gm, ICKResult.output_data);
                         end
                     end
