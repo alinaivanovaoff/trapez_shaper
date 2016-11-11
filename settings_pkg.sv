@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 // Original Author: Alina Ivanova
 // email: alina.al.ivanova@gmail.com
-// web: alinaivanovaoff.com
+// web: www.alinaivanovaoff.com
 // settings_pkg.sv
 // Created: 11.10.2016
 //
